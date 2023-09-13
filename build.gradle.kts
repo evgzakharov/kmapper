@@ -7,8 +7,9 @@ plugins {
 subprojects {
 	apply(plugin = rootProject.libs.plugins.kotlin.get().pluginId)
 
-	group = "co.github"
-	version = "0.0.1-SNAPSHOT"
+	group = "co.github.evgzakharov"
+	version = "0.0.1"
+
 	java.sourceCompatibility = JavaVersion.VERSION_17
 
 	repositories {
