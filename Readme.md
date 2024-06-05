@@ -14,7 +14,7 @@ Kotlin mapper for mapping objects
 
 ```kotlin
 plugins {
-    id("com.google.devtools.ksp") version "1.9.0-1.0.11"
+    id("com.google.devtools.ksp") version "2.0.0-1.0.21"
 }
 ``` 
 
@@ -34,8 +34,8 @@ sourceSets {
 
 ```kotlin
 dependencies {
-    ksp("io.github.evgzakharov:kmapper:0.0.1")
-    implementation("io.github.evgzakharov:kmapper:0.0.1")
+    ksp("io.github.evgzakharov:kmapper:0.0.2")
+    implementation("io.github.evgzakharov:kmapper:0.0.2")
 }
 ```
 
