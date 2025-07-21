@@ -10,12 +10,15 @@ import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSAnnotated
+import com.google.devtools.ksp.symbol.KSCallableReference
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFile
+import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSNode
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSTypeReference
 import com.google.devtools.ksp.symbol.KSValueParameter
+import com.google.devtools.ksp.symbol.KSVisitorVoid
 import com.google.devtools.ksp.symbol.Nullability
 import com.google.devtools.ksp.validate
 import com.squareup.kotlinpoet.ClassName
@@ -40,7 +43,7 @@ class BuilderProcessor(
         logger.info("start resolving")
         val converterElements = getElements(resolver, MapperConverter::class, "dynamicFields")
         val implemented = converterElements
-            .associateBy { (it.srcType to it.dstType) }
+            .associateBy { it.srcType to it.dstType }
 
         val files = converterElements.filter { it.implemented }.map {
             genImplementedCoverterFile(it)
@@ -88,13 +91,13 @@ class BuilderProcessor(
 
                                 if (dstProperty.setter != null) {
                                     val statement = "target.$dstName = " + prepareValue(
-                                        srcProperty.type,
-                                        dstProperty.type,
-                                        "source.",
-                                        dstName,
-                                        implemented,
-                                        resolver,
-                                        data
+                                        srcType = srcProperty.type,
+                                        dstType = dstProperty.type,
+                                        sourceName = "source.",
+                                        dstName = dstName,
+                                        implemented = implemented,
+                                        resolver = resolver,
+                                        data = data
                                     )
                                     it.addStatement(statement)
                                 } else {
@@ -152,17 +155,8 @@ class BuilderProcessor(
             .addSuperinterface(data.type)
             .addOriginatingKSFile(data.originalFile)
             .addFunction(
-                FunSpec.builder("convert")
-                    .addModifiers(KModifier.OVERRIDE)
-                    .addParameter("source", srcType)
-                    .addStatement("return build(source, MappingBuilder.Configuration())")
-                    .returns(dstType)
-                    .build()
-            )
-            .addFunction(
                 FunSpec.builder("build")
                     .addModifiers(KModifier.OVERRIDE)
-                    .addParameter("source", srcType)
                     .addParameter(
                         "configuration",
                         MappingBuilder.Configuration::class.asClassName()
@@ -413,7 +407,10 @@ class BuilderProcessor(
                     implemented = false
                 )
             }.toList()
+
+        val test: KSFunctionDeclaration = TODO()
     }
+
 
     private fun KSTypeReference.toClassDeclaration(): KSClassDeclaration {
         return resolve().declaration.closestClassDeclaration()!!

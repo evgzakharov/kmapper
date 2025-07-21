@@ -13,7 +13,7 @@ dependencies {
 sourceSets {
     main {
         java {
-            srcDir("${buildDir.absolutePath}/generated/ksp/")
+            srcDir("${layout.buildDirectory.dir("generated/ksp").get()}")
         }
     }
 }

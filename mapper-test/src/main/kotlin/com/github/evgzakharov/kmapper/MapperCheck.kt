@@ -65,12 +65,12 @@ data class DstDto2(
 @MapperConverter
 interface Src2ToDst2Converter: Converter<SrcDto2, DstDto2>
 
-@MapperConverter(dynamicFields = ["name2", "surname", "default"])
+@MapperConverter
 interface SrcToDstConverter: Converter<SrcDto, DstDto>
 
-fun SrcDto.toDst(): DstDto = SrcToDstConverterImpl.convert(this) {
+val srcToDstConverter = SrcToDstConverterImpl.createConverter {
     DstDto::name2 from SrcDto::name
-    DstDto::surname from { this@toDst.surname + "333555" }
+    DstDto::surname from { it.surname + "333555" }
     DstDto::default from { "override default" }
 }
 
